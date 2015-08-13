@@ -3,15 +3,14 @@ class Rational(n: Int, d: Int = 1){
   // ここで指定した条件を満たしていないと
   // エラーを返してインスタンスを生成しない
   require(d != 0)
-  // toString を override
-  // これをしないと println やインタプリタの "res0:" は <クラス名>@<16進数> を返す
-
 
   private val g = gcd(n.abs, d.abs)
 
   val numer = n / g
   val denom = d / g
 
+  // toString を override
+  // これをしないと println やインタプリタの "res0:" は <クラス名>@<16進数> を返す
   override def toString = numer + " / " + denom
 
 
