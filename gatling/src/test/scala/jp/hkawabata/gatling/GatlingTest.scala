@@ -39,8 +39,5 @@ class GatlingTest extends Simulation {
     rampUsersPerSec(50).to(1).during(20)
   )
 
-  //setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
-  //setUp(scn.inject(rampUsers(100) over (5 seconds)).protocols(httpConf))
-  //setUp(scn.inject(rampUsersPerSec(1).to(500).during(120)).protocols(httpConf))
   setUp(scn.inject(injections)).protocols(httpConf)
 }
