@@ -92,5 +92,8 @@ class GatlingTest extends Simulation {
     constantUsersPerSec(5).during(10)
   )
 
-  setUp(scn.inject(injections), scn2.inject(injections)).protocols(httpConf)
+  setUp(scn.inject(injections), scn2.inject(injections)).protocols(httpConf).assertions(
+    global.responseTime.mean.lessThan(50),
+    global.successfulRequests.percent.greaterThan(99)
+  )
 }
