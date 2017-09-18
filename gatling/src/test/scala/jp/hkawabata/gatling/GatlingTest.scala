@@ -11,6 +11,14 @@ import scala.concurrent.duration._
 
 class GatlingTest extends Simulation {
 
+  before {
+    println("\nstress test is about to start!\n")
+  }
+
+  after {
+    println("\nstress test is finished!\n")
+  }
+
   val httpConf: HttpProtocolBuilder = http
     .baseURL("http://node001.hkawabata.jp:8983")
     /*
@@ -79,7 +87,7 @@ class GatlingTest extends Simulation {
       .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "*:*"))
 
   val injections: Seq[InjectionStep with Product with Serializable] = Seq(
-    rampUsersPerSec(1).to(50).during(20),
+    rampUsersPerSec(1).to(50).during(20).randomized,
     constantUsersPerSec(50).during(20),
     nothingFor(5 seconds),
     atOnceUsers(200),
@@ -92,7 +100,12 @@ class GatlingTest extends Simulation {
     constantUsersPerSec(5).during(10)
   )
 
-  setUp(scn.inject(injections), scn2.inject(injections)).protocols(httpConf).assertions(
+  setUp(scn.inject(injections), scn2.inject(injections)).protocols(httpConf).throttle(
+    reachRps(10) in (5 seconds),
+    holdFor(5 seconds),
+    jumpToRps(10),
+    holdFor(10 seconds)
+  ).assertions(
     global.responseTime.mean.lessThan(50),
     global.successfulRequests.percent.greaterThan(99)
   )
