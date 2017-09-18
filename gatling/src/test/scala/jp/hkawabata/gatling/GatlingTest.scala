@@ -39,25 +39,32 @@ class GatlingTest extends Simulation {
     Map("price" -> 1980, "title" -> "サーバ"),
     Map("price" -> 1680, "title" -> "ネットワーク"),
     Map("price" -> 3200, "title" -> "入門")
-  ).random
+  ).circular
+
+  val testData4: RecordSeqFeederBuilder[String] = csv("feeder_test.csv").random
 
   val scn: ScenarioBuilder = scenario("Typical User A")
-    .feed(testData1).feed(testData2).feed(testData3)
-    .repeat(2){
-      exec(http("request_A_1.1")
+    .feed(testData1).feed(testData2).feed(testData3).feed(testData4)
+    .exec(http("request_A_1.1")
         .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "summary:${keyWord} AND pages:${pages}")
         .check(bodyString.saveAs("key1"))).exitHereIfFailed
         .exec(http("request_A_1.2")
           .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "price:${price} AND title:${title}")
           .check(status.is(200))
           .check(bodyString.saveAs("key2"))).exitHereIfFailed
-    }.pause(100 milliseconds)
-    .exec(http("request_A_2")
-    .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "*:*")).exitHereIfFailed
+        .exec(http("request_A_1.3")
+          .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "author:${author}")
+          .check(status.is(200))
+          .check(bodyString.saveAs("key3"))).exitHereIfFailed
     .exec{
       session =>
         val attr: Map[String, Any] = session.attributes
-        println(s"${attr.getOrElse("key1", "").asInstanceOf[String].length}, ${attr.getOrElse("key2", "").asInstanceOf[String].length}")
+        val resSize = List(
+          attr.getOrElse("key1", "").asInstanceOf[String].length,
+          attr.getOrElse("key2", "").asInstanceOf[String].length,
+          attr.getOrElse("key3", "").asInstanceOf[String].length
+        )
+        //println(s"${resSize(0)}\t${resSize(1)}\t${resSize(2)}")
         session
     }
 
@@ -71,7 +78,6 @@ class GatlingTest extends Simulation {
     .exec(http("request_B_2")
       .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "*:*"))
 
-  /*
   val injections: Seq[InjectionStep with Product with Serializable] = Seq(
     rampUsersPerSec(1).to(50).during(20),
     constantUsersPerSec(50).during(20),
@@ -81,8 +87,8 @@ class GatlingTest extends Simulation {
     rampUsers(1000) over (20 seconds),
     rampUsersPerSec(50).to(1).during(20)
   )
-  */
-  val injections: Seq[InjectionStep with Product with Serializable] = Seq(
+
+  val lightInjections: Seq[InjectionStep with Product with Serializable] = Seq(
     constantUsersPerSec(5).during(10)
   )
 
