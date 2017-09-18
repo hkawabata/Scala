@@ -41,7 +41,7 @@ class GatlingTest extends Simulation {
     Map("price" -> 3200, "title" -> "入門")
   ).circular
 
-  val testData4: RecordSeqFeederBuilder[String] = csv("feeder_test.csv").random
+  val testData4: RecordSeqFeederBuilder[String] = csv("feed/feeder_test.csv").random
 
   val scn: ScenarioBuilder = scenario("Typical User A")
     .feed(testData1).feed(testData2).feed(testData3).feed(testData4)
