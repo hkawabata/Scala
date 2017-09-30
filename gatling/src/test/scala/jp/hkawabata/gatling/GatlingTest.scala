@@ -7,6 +7,7 @@ import io.gatling.core.structure.ScenarioBuilder
 import io.gatling.http.Predef._
 import io.gatling.http.protocol.HttpProtocolBuilder
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 
 /**
@@ -14,12 +15,16 @@ import scala.concurrent.duration._
   */
 class GatlingTest extends Simulation {
 
+  val lb: ListBuffer[String] = new ListBuffer
+
   before {
     println("\nstress test is about to start!\n")
   }
 
   after {
     println("\nstress test is finished!\n")
+    println(lb.size)
+    println(lb.head)
   }
 
   val httpConf: HttpProtocolBuilder = http
@@ -89,7 +94,8 @@ class GatlingTest extends Simulation {
     }
     .exec {
       session =>
-        println(session.attributes.getOrElse("functionQuery", "").asInstanceOf[String])
+        //println(session.attributes.getOrElse("functionQuery", "").asInstanceOf[String])
+        lb.append(session.attributes.getOrElse("functionQuery", "").asInstanceOf[String])
         session
     }
 
