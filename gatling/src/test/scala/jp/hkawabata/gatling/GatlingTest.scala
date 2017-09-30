@@ -9,6 +9,9 @@ import io.gatling.http.protocol.HttpProtocolBuilder
 
 import scala.concurrent.duration._
 
+/**
+  * 実行コマンド：sbt gatling:test
+  */
 class GatlingTest extends Simulation {
 
   before {
@@ -21,7 +24,7 @@ class GatlingTest extends Simulation {
 
   val httpConf: HttpProtocolBuilder = http
     .baseURL("http://node001.hkawabata.jp:8983")
-    /*
+  /*
     .headers(Map(
       HttpHeaderNames.ContentType    -> HttpHeaderValues.ApplicationJson,
       HttpHeaderNames.Accept         -> HttpHeaderValues.ApplicationJson,
@@ -54,17 +57,17 @@ class GatlingTest extends Simulation {
   val scn: ScenarioBuilder = scenario("Typical User A")
     .feed(testData1).feed(testData2).feed(testData3).feed(testData4)
     .exec(http("request_A_1.1")
-        .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "summary:${keyWord} AND pages:${pages}")
-        .check(bodyString.saveAs("key1"))).exitHereIfFailed
-        .exec(http("request_A_1.2")
-          .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "price:${price} AND title:${title}")
-          .check(status.is(200))
-          .check(bodyString.saveAs("key2"))).exitHereIfFailed
-        .exec(http("request_A_1.3")
-          .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "author:${author}")
-          .check(status.is(200))
-          .check(bodyString.saveAs("key3"))).exitHereIfFailed
-    .exec{
+      .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "summary:${keyWord} AND pages:${pages}")
+      .check(bodyString.saveAs("key1"))).exitHereIfFailed
+    .exec(http("request_A_1.2")
+      .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "price:${price} AND title:${title}")
+      .check(status.is(200))
+      .check(bodyString.saveAs("key2"))).exitHereIfFailed
+    .exec(http("request_A_1.3")
+      .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "author:${author}")
+      .check(status.is(200))
+      .check(bodyString.saveAs("key3"))).exitHereIfFailed
+    .exec {
       session =>
         val attr: Map[String, Any] = session.attributes
         val resSize = List(
@@ -75,9 +78,23 @@ class GatlingTest extends Simulation {
         //println(s"${resSize(0)}\t${resSize(1)}\t${resSize(2)}")
         session
     }
+    .doIfOrElse(session => session.attributes.getOrElse("key1", "").asInstanceOf[String].contains("Solr")) {
+      exec(http("request_B_3.1").get("/solr/solrbook/select").queryParamMap(
+        Map("q" -> "price:1780", "fl" -> "title,pages,price,score")
+      ).check(bodyString.saveAs("functionQuery")))
+    } {
+      exec(http("request_B_3.2").get("/solr/solrbook/select").queryParamSeq(
+        Seq(("q", "price:1980"), ("fl", "title,pages,price,score"))
+      ).check(bodyString.saveAs("functionQuery")))
+    }
+    .exec {
+      session =>
+        println(session.attributes.getOrElse("functionQuery", "").asInstanceOf[String])
+        session
+    }
 
   val scn2: ScenarioBuilder = scenario("Typical User B")
-    .repeat(2){
+    .repeat(2) {
       exec(http("request_B_1.1")
         .get("/solr/solrbook/select?indent=on&wt=json").queryParam("q", "summary:Solr"))
         .exec(http("request_B_1.2")
@@ -101,11 +118,14 @@ class GatlingTest extends Simulation {
   )
 
   setUp(scn.inject(injections), scn2.inject(injections)).protocols(httpConf).throttle(
+    /*
     reachRps(10) in (5 seconds),
     holdFor(5 seconds),
     jumpToRps(10),
     holdFor(10 seconds)
+    */
   ).assertions(
+    // この条件を満たさなければテスト失敗
     global.responseTime.mean.lessThan(50),
     global.successfulRequests.percent.greaterThan(99)
   )
