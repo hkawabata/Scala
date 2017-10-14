@@ -2,7 +2,7 @@ package jp.hkawabata.scalapuzzlers
 
 object ScalaPuzzler {
   def main(args: Array[String]): Unit ={
-    run(1, puzzle1, puzzle2, puzzle3)
+    run(1, puzzle1, puzzle2, puzzle3, puzzle4)
   }
 
 
@@ -47,5 +47,37 @@ object ScalaPuzzler {
     new Hoge1().hello()
     new Hoge2("Hoge2").hello()
     new Hoge3("Hoge3").hello()
+  }
+
+  def puzzle4(): Unit = {
+    trait A {
+      val large: String
+      val small: String = "a"
+      println(s"large: $large, small: $small")
+    }
+    class B extends A {
+      val large = "B"
+      println(s"large: $large, small: $small")
+    }
+    class C extends B {
+      override val small: String = "c"
+      println(s"large: $large, small: $small")
+    }
+    new C
+
+    trait A2 {
+      val large: String
+      lazy val small: String = "a2"
+      println(s"large: $large, small: $small")
+    }
+    class B2 extends A2 {
+      val large = "B2"
+      println(s"large: $large, small: $small")
+    }
+    class C2 extends B2 {
+      override lazy val small: String = "c2"
+      println(s"large: $large, small: $small")
+    }
+    new C2
   }
 }
