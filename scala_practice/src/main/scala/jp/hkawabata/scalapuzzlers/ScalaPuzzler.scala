@@ -2,7 +2,7 @@ package jp.hkawabata.scalapuzzlers
 
 object ScalaPuzzler {
   def main(args: Array[String]): Unit ={
-    run(1, puzzle1, puzzle2, puzzle3, puzzle4)
+    run(1, puzzle1, puzzle2, puzzle3, puzzle4, puzzle5)
   }
 
 
@@ -79,5 +79,15 @@ object ScalaPuzzler {
       println(s"large: $large, small: $small")
     }
     new C2
+  }
+
+  def puzzle5(): Unit = {
+    def sumSize(itr: Iterable[Iterable[Int]]): Int = {
+      itr.map(_.size).sum
+    }
+    println(sumSize(List(Set(1, 2), Set(3, 4))))
+    println(sumSize(Set(List(1, 2), List(3, 4))))
+    println(sumSize(List(List(1, 2), Set(3, 4))))
+    println(sumSize(Set(List(1, 2), Set(3, 4))))
   }
 }
