@@ -1,7 +1,5 @@
 package jp.hkawabata.scalapuzzlers
 
-import scala.collection.immutable.HashSet
-import scala.collection.mutable
 
 object ScalaPuzzler {
   def main(args: Array[String]): Unit ={
@@ -120,6 +118,8 @@ object ScalaPuzzler {
   }
 
   def puzzle07(): Unit = {
+    import scala.collection.mutable
+
     val functions1: mutable.Buffer[() => Int] = mutable.Buffer()
     val functions2: mutable.Buffer[() => Int] = mutable.Buffer()
 
@@ -186,6 +186,8 @@ object ScalaPuzzler {
   }
 
   def puzzle10(): Unit = {
+    import scala.collection.immutable.HashSet
+
     trait HashCodeOverrided {
       override def hashCode(): Int = {
         println(s"Trait: ${this}")
@@ -227,9 +229,37 @@ object ScalaPuzzler {
     }
   }
 
-  def puzzle12(): Unit = {}
+  def puzzle12(): Unit = {
+    import scala.collection.SortedSet
 
-  def puzzle13(): Unit = {}
+    case class RomanNumeral(symbol: String, value: Int)
+    implicit object RomanOrdering extends Ordering[RomanNumeral] {
+      def compare(x: RomanNumeral, y: RomanNumeral): Int = x.value compare y.value
+    }
+    val numerals = SortedSet(
+      RomanNumeral("A", 1000),
+      RomanNumeral("B", 100),
+      RomanNumeral("C", 10),
+      RomanNumeral("D", 1),
+      RomanNumeral("E", 500),
+      RomanNumeral("F", 50),
+      RomanNumeral("G", 5)
+    )
+
+    for (num <- numerals; sym = num.symbol) { print(sym) }
+    println("")
+    numerals.map(_.symbol).foreach(print)
+    println("")
+    numerals.toSeq.map(_.symbol).foreach(print)
+    println("")
+  }
+
+  def puzzle13(): Unit = {
+    // コンパイルエラーだが、REPL で実行すると null が代入される
+    //val s1: String = s1
+    // コンパイルエラーだが、REPL で実行すると文字列 nullnull が代入される
+    //val s2: String = s2 + s2
+  }
 
   def puzzle14(): Unit = {}
 
