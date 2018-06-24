@@ -7,7 +7,7 @@ import java.io._
 /**
   * 実行方法
   *
-  * sbt compile "run ${serviceName} ${userName} ${password}"
+  * sbt compile "run-main jp.hkawabata.network.mail.Pop3 ${serviceName} ${userName} ${password}"
   *
   * - serviceName: メールサービス名 (yahoo or google)
   * - userName: ユーザ名
