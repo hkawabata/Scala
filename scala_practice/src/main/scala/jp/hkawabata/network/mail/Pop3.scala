@@ -5,6 +5,10 @@ import java.io._
 
 
 /**
+  * POP3 によりメールサーバからメールを取得する
+  * cf. RFC1934 https://www.ietf.org/rfc/rfc1939.txt
+  *
+  *
   * 実行方法
   *
   * sbt compile "run-main jp.hkawabata.network.mail.Pop3 ${serviceName} ${userName} ${password}"

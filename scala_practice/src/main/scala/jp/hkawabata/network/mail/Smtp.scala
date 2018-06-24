@@ -5,7 +5,7 @@ import java.net.Socket
 import java.util.Base64
 
 /**
-  * SMTP を使ってメールサーバと通信する
+  * SMTP を使ってメールを送信する
   * cf. RFC5321 (https://tools.ietf.org/html/rfc5321)
   *
   *
