@@ -31,10 +31,10 @@ object Pop3 {
     val pop3 = new Pop3(popServer(serviceName), port(serviceName))
 
     try {
-      pop3.command("user " + username)
-      pop3.command("pass " + password)
-      pop3.command("list")
-      pop3.command("retr 1")
+      pop3.send("user " + username)
+      pop3.send("pass " + password)
+      pop3.send("list")
+      pop3.send("retr 1")
     } finally {
       pop3.close()
     }
@@ -47,7 +47,7 @@ class Pop3 (server: String, port: Int) {
   val is = socket.getInputStream
   readerFlush()
 
-  def command(message: String): Unit = {
+  def send(message: String): Unit = {
     val end = "\r\n"
     writer.write(message + end)
     writer.flush()

@@ -45,24 +45,24 @@ object Smtp {
     val smtp = new Smtp(smtpServer(serviceName), port(serviceName))
 
     try {
-      smtp.command("EHLO localhost")
-      smtp.command("AUTH LOGIN")
-      smtp.command(Base64.getEncoder.encodeToString(username.getBytes))
-      smtp.command(Base64.getEncoder.encodeToString(password.getBytes))
-      smtp.command(s"MAIL FROM:$emailAddress")
-      smtp.command(s"RCPT TO:$emailAddress")
-      smtp.command("DATA")
-      smtp.command(
+      smtp.send("EHLO localhost")
+      smtp.send("AUTH LOGIN")
+      smtp.send(Base64.getEncoder.encodeToString(username.getBytes))
+      smtp.send(Base64.getEncoder.encodeToString(password.getBytes))
+      smtp.send(s"MAIL FROM:$emailAddress")
+      smtp.send(s"RCPT TO:$emailAddress")
+      smtp.send("DATA")
+      smtp.send(
         List(
-          "Subject: hoge",
+          s"Subject: hoge",
           s"From: $emailAddress",
           s"To: $emailAddress",
-          "",
+          s"",
           s"$message",
-          "."
+          s"."
         ).mkString("\r\n")
       )
-      smtp.command("QUIT")
+      smtp.send("QUIT")
     } finally {
       smtp.close()
     }
@@ -75,7 +75,7 @@ class Smtp (server: String, port: Int) {
   val reader = new BufferedReader(new InputStreamReader(socket.getInputStream))
   readerFlush()
 
-  def command(message: String): Unit = {
+  def send(message: String): Unit = {
     val end = "\r\n"
     writer.write(message + end)
     writer.flush()
