@@ -56,7 +56,9 @@ class Pop3 (server: String, port: Int) {
     writer.write(message + end)
     writer.flush()
 
+    println("/********************************")
     println(message)
+    println("********************************/")
 
     if (message.startsWith("user") || message.startsWith("pass")) {
       readerFlush()

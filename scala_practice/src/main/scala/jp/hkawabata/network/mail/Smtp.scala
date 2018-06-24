@@ -80,13 +80,13 @@ class Smtp (server: String, port: Int) {
     writer.write(message + end)
     writer.flush()
 
-    println(s"\n### $message\n")
+    println("/********************************")
+    println(message)
+    println("********************************/")
+
     readerFlush()
   }
 
-  /**
-    *
-    */
   def readerFlush(): Unit = {
     var line = ""
     do {
