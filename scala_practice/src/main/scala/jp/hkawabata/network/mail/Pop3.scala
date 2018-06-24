@@ -53,7 +53,12 @@ class Pop3 (server: String, port: Int) {
     writer.flush()
 
     println(message)
-    readerFlush()
+
+    if (message.startsWith("user") || message.startsWith("pass")) {
+      readerFlush()
+    } else {
+      readerFlushMultipleLines()
+    }
   }
 
   def readerFlush(): Unit = {
@@ -64,6 +69,25 @@ class Pop3 (server: String, port: Int) {
       sb.append(char.toChar)
       before = char
       char = is.read()
+    }
+    println(sb.result())
+    println("-------------------")
+  }
+
+  def readerFlushMultipleLines(): Unit = {
+    val sb = new StringBuilder
+    var char = ' '
+    var b1 = ' '
+    var b2 = ' '
+    var b3 = ' '
+    var b4 = ' '
+    while (List(b4, b3, b2, b1, char).mkString != "\r\n.\r\n") {
+      b4 = b3
+      b3 = b2
+      b2 = b1
+      b1 = char
+      char = is.read().toChar
+      sb.append(char)
     }
     println(sb.result())
     println("-------------------")
