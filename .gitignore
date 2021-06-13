@@ -1,10 +1,12 @@
 # git で管理しないファイルをここで指定する
 
+.*
 *~
 *.pyc
 *.swp
 .DS_Store
 
+exe/
 project/
 target/
 .idea
