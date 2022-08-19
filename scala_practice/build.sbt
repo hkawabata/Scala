@@ -9,7 +9,8 @@ libraryDependencies ++= Seq(
   // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver
   "org.seleniumhq.selenium" % "selenium-chrome-driver" % "3.141.59",
   // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
-  "org.seleniumhq.selenium" % "selenium-java" % "3.141.59"
-
+  "org.seleniumhq.selenium" % "selenium-java" % "3.141.59",
+  // https://mvnrepository.com/artifact/org.scala-lang.modules/scala-parser-combinators
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1"
   // ...
 )
